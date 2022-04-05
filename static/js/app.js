@@ -34,7 +34,7 @@ dataPromise.then(function(samples)
             vals.push(bacteriaData.sample_values[i])
             ids.push('OTU ' + bacteriaData.otu_ids[i].toString())
 
-            if(i >= 10)
+            if(i >= 9)
             {
                 i += bacteriaData.otu_ids.length
             }
@@ -79,10 +79,10 @@ dataPromise.then(function(samples)
         //creates layout for bubble chart
         var layout = 
         {
-            title: 'Marker Size',
+            title: 'OTU ID',
             showlegend: false,
             height: 600,
-            width: 600
+            width: 800
         }
 
         //graphs the data
@@ -99,52 +99,40 @@ dataPromise.then(function(samples)
     {
         console.log('You updated the subject ID!')
 
+        let names = samples.names
         let demographics = samples.metadata
         let sampleList = samples.samples
 
         var dropdownMenu = d3.select("#selDataset")
         var selectedId = dropdownMenu.property("value")
+        var selectedIndex = names.indexOf(selectedId)
 
         let vals = []
         let ids = []
 
         //updates the demographic information
-        for(let x = 0; x < demographics.length; x++)
-        {
-            if(demographics[x].id == selectedId)
-            {
-                var personData = demographics[x]
 
-                for(const stat in personData)
-                {      
-                    document.getElementById(stat).textContent = stat + ': ' + personData[stat] 
-                }
+        var personData = demographics[selectedIndex]
+        for(const stat in personData)
+        {
+            document.getElementById(stat).textContent = stat + ': ' + personData[stat]
+        }      
+
+        //for loop to find sample data for given id
+        bacteriaData = sampleList[selectedIndex]
+
+        for( let j = 0; j < bacteriaData.otu_ids.length ; j++)
+        {
+            vals.push(bacteriaData.sample_values[j])
+            ids.push('OTU ' + bacteriaData.otu_ids[j].toString())
+            if(j >= 9)
+            {
+                j += bacteriaData.otu_ids.length
             }
         }
 
-        //for loop to find sample data for given id
-        for(let i = 0; i < sampleList.length; i++)
-        {
-            bacteriaData = sampleList[i]
 
-            //checks if the data's id value matches the chosen id
-            if(bacteriaData.id == selectedId)
-            {
-                //loops through the desired data to obtain the otu_ids and values, but
-                //will stop once its gotten the first 10
-                for( let j = 0; j < bacteriaData.otu_ids.length ; j++)
-                {
-                    vals.push(bacteriaData.sample_values[j])
-                    ids.push('OTU ' + bacteriaData.otu_ids[j].toString())
-                    if(j >= 10)
-                    {
-                        j += bacteriaData.otu_ids.length
-                    }
-                }
-
-                i += sampleList.length
-            }            
-        }
+    
 
         //recreates the bar chart
         var barData = 
@@ -171,10 +159,10 @@ dataPromise.then(function(samples)
         //recreates the layout for bubble chart
         var layout = 
         {
-            title: 'Marker Size',
+            title: 'OTU ID',
             showlegend: false,
             height: 600,
-            width: 600
+            width: 800
         }
 
         //replots the graphs
